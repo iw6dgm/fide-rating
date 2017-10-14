@@ -6,7 +6,7 @@ Parse the standard XML full player rating list provided by FIDE and save data in
 Setup
 -----
 
-Create a SQLite3 database `fide.db` and create `player` by using:
+Create a SQLite3 database `fide.db` and create `player` table by using:
 
 ```sql
 CREATE TABLE IF NOT EXISTS player (
@@ -32,9 +32,7 @@ CREATE TABLE IF NOT EXISTS player (
 ```
 
 Download XML file from FIDE website and unpack it. File name should be `players_list_xml_foa.xml`.
-
 Download and install Go SQLite3 dependency as described in [here](https://github.com/mattn/go-sqlite3).
-
 Compile the source code and run the executable with no parameters.
 
 ```bash
@@ -42,7 +40,7 @@ go build fideparser.go
 ./fideparser
 ```
 
-**Warning** The overall process is very time-consuming and the resulting database is huge.
+**Warning**: The overall process is very time-consuming and the resulting database is huge.
 
 TODO
 ----
