@@ -45,16 +45,16 @@ type Player struct {
 
 func main() {
 	// Read XML file
-	content, err := ioutil.ReadFile(PlayersFilename)
-	checkErr(err)
+	content := loadContent(PlayersFilename)
 
 	pl := PlayersList{}
 	// Parse XML content
-	err = xml.Unmarshal(content, &pl)
+	err := xml.Unmarshal(content, &pl)
 	checkErr(err)
 
 	// Open database connection
-	db, _ := sql.Open("sqlite3", PlayersDB)
+	db := dbOpen(PlayersDB)
+	defer db.Close()
 
 	// Clean up player table
 	db.Query(DeleteSQL)
@@ -84,6 +84,18 @@ func main() {
 	row := db.QueryRow(SelectCountSQL)
 	row.Scan(&count)
 	fmt.Printf("Total n. player(s) loaded : %d\n", count)
+}
+
+func loadContent(filename string) []byte {
+	content, err := ioutil.ReadFile(filename)
+	checkErr(err)
+	return content
+}
+
+func dbOpen(conn string) *sql.DB {
+	db, err := sql.Open("sqlite3", conn)
+	checkErr(err)
+	return db
 }
 
 func checkErr(err error) {
