@@ -40,7 +40,7 @@ go build fideparser.go
 ./fideparser
 ```
 
-**Warning**: The overall process is very time-consuming and the resulting database is huge.
+**Warning**: The overall process is very time-consuming.
 
 TODO
 ----
