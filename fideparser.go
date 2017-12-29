@@ -12,6 +12,7 @@ const (
 	PlayersFilename = `players_list_xml_foa.xml`
 	PlayersDB       = `fide.db`
 	DeleteSQL       = `DELETE FROM player`
+	VacuumSQL       = `VACUUM`
 	InsertSQL       = `INSERT INTO player (fideid,name,country,sex,title,w_title,o_title,foa_title,rating,games,k,rapid_rating,rapid_games,rapid_k,blitz_rating,blitz_games,blitz_k,birthday,flag) VALUES (? /*not nullable*/,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	SelectCountSQL  = `SELECT COUNT(*) FROM player`
 )
@@ -56,14 +57,19 @@ func main() {
 	db := dbOpen(PlayersDB)
 	defer db.Close()
 
-	// Clean up player table
-	db.Query(DeleteSQL)
+	cleanUp(db)
 
 	// Set up prepared statement to insert data
 	stmt, _ := db.Prepare(InsertSQL)
 
 	// Loop through decoded XML input data
 	for _, p := range pl.Players {
+
+		if p.Name == "" || p.Games == 0 {
+			fmt.Printf("Skip player FIDE ID %d by having either Name or Games field empty\n", p.FideId)
+			continue
+		}
+
 		stmt.Exec(
 			// FIDE id
 			p.FideId,
@@ -84,6 +90,14 @@ func main() {
 	row := db.QueryRow(SelectCountSQL)
 	row.Scan(&count)
 	fmt.Printf("Total n. player(s) loaded : %d\n", count)
+}
+
+func cleanUp(db *sql.DB) {
+	// Clean up player table
+	_, e1 := db.Exec(DeleteSQL)
+	checkErr(e1)
+	_, e2 := db.Exec(VacuumSQL)
+	checkErr(e2)
 }
 
 func loadContent(filename string) []byte {
