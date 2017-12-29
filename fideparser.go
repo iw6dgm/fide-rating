@@ -57,6 +57,7 @@ func main() {
 	db := dbOpen(PlayersDB)
 	defer db.Close()
 
+	// Clean up player table
 	cleanUp(db)
 
 	// Set up prepared statement to insert data
@@ -93,7 +94,6 @@ func main() {
 }
 
 func cleanUp(db *sql.DB) {
-	// Clean up player table
 	_, e1 := db.Exec(DeleteSQL)
 	checkErr(e1)
 	_, e2 := db.Exec(VacuumSQL)

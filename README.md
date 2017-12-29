@@ -45,4 +45,5 @@ go build fideparser.go
 TODO
 ----
 
-FIDE Rating API: Web app to provide friendly APIs to query the FIDE dabatase created by the parser above.
+- [X] FIDE Rating import: given a players list XML file from FIDE website, import it
+- [ ] FIDE Rating API: Web app to provide friendly APIs to query the FIDE dabatase created by the parser above
