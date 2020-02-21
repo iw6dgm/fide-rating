@@ -1,16 +1,12 @@
 package main
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
-	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 	"strconv"
-	"time"
+
+	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Player struct {
@@ -50,82 +46,42 @@ type ErrResponse struct {
 	ErrorText  string `json:"error,omitempty"` // application-level error message, for debugging
 }
 
-func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
-	render.Status(r, e.HTTPStatusCode)
-	return nil
-}
-
 //var db *sql.DB
 
 func main() {
-	r := chi.NewRouter()
+	r := gin.Default()
 
-	// A good base middleware stack
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.URLFormat)
-	r.Use(render.SetContentType(render.ContentTypeJSON))
-
-	// Set a timeout value on the request context (ctx), that will signal
-	// through ctx.Done() that the request has timed out and further
-	// processing should be stopped.
-	r.Use(middleware.Timeout(30 * time.Second))
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Welcome to the home page!")
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Hello")
 	})
 
-	r.Route("/players", func(r chi.Router) {
-		r.Route("/{playerID}", func(r chi.Router) {
-			r.Use(PlayerCtx)
-			r.Get("/", getPlayer)
-		})
-	})
-
-	http.ListenAndServe(":7373", r)
-}
-
-func PlayerCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+	r.GET("/players/:playerID", func(c *gin.Context) {
 		var player *Player
 		var err error
 
-		if playerID := chi.URLParam(r, "playerID"); playerID != "" {
+		if playerID := c.Param("playerID"); playerID != "" {
 			if id, e := strconv.ParseUint(playerID, 10, 64); e == nil {
 				player, err = dbGetPlayer(id)
 
 				if err == sql.ErrNoRows {
-					render.Render(w, r, ErrNotFound)
+					c.JSON(http.StatusNotFound, gin.H{"message": ErrNotFound})
 					return
 				}
 
 			} else {
-				render.Render(w, r, ErrNotFound)
+				c.JSON(http.StatusNotFound, gin.H{"message": ErrNotFound})
 				return
 			}
 		} else {
-			render.Render(w, r, ErrNotFound)
+			c.JSON(http.StatusNotFound, gin.H{"message": ErrNotFound})
 			return
 		}
-		ctx := context.WithValue(r.Context(), "player", player)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		c.JSON(http.StatusOK, gin.H{
+			"player": player,
+		})
 	})
-}
 
-func (p *Player) Render(w http.ResponseWriter, r *http.Request) error {
-	return nil
-}
-
-func getPlayer(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	player, ok := ctx.Value("player").(*Player)
-	if !ok {
-		http.Error(w, http.StatusText(422), 422)
-		return
-	}
-	render.Render(w, r, player)
+	http.ListenAndServe(":7373", r)
 }
 
 func dbGetPlayer(playerID uint64) (*Player, error) {

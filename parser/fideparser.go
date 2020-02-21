@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"encoding/xml"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
 	PlayersFilename = `players_list_xml_foa.xml`
-	PlayersDB       = `fide.db`
 	DeleteSQL       = `DELETE FROM player`
 	VacuumSQL       = `VACUUM`
 	InsertSQL       = `INSERT INTO player (fideid,name,country,sex,title,w_title,o_title,foa_title,rating,games,k,rapid_rating,rapid_games,rapid_k,blitz_rating,blitz_games,blitz_k,birthday,flag) VALUES (? /*not nullable*/,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
@@ -20,28 +20,6 @@ const (
 type PlayersList struct {
 	XMLName xml.Name `xml:"playerslist"`
 	Players []Player `xml:"player"`
-}
-
-type Player struct {
-	FideId      uint64 `xml:"fideid"`
-	Name        string `xml:"name"`
-	Country     string `xml:"country"`
-	Sex         string `xml:"sex"`
-	Title       string `xml:"title"`
-	WTitle      string `xml:"w_title"`
-	OTitle      string `xml:"o_title"`
-	FoaTitle    string `xml:"foa_title"`
-	Rating      uint   `xml:"rating"`
-	Games       uint   `xml:"games"`
-	K           uint8  `xml:"k"`
-	RapidRating uint   `xml:"rapid_rating"`
-	RapidGames  uint   `xml:"rapid_games"`
-	RapidK      uint8  `xml:"rapid_k"`
-	BlitzRating uint   `xml:"blitz_rating"`
-	BlitzGames  uint   `xml:"blitz_games"`
-	BlitzK      uint8  `xml:"blitz_k"`
-	Birthday    uint16 `xml:"birthday"`
-	Flag        string `xml:"flag"`
 }
 
 func main() {
@@ -104,16 +82,4 @@ func loadContent(filename string) []byte {
 	content, err := ioutil.ReadFile(filename)
 	checkErr(err)
 	return content
-}
-
-func dbOpen(conn string) *sql.DB {
-	db, err := sql.Open("sqlite3", conn)
-	checkErr(err)
-	return db
-}
-
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
