@@ -11,11 +11,34 @@ import (
 
 const (
 	PlayersFilename = `players_list_xml_foa.xml`
+	PlayersDB       = `fide.db`
 	DeleteSQL       = `DELETE FROM player`
 	VacuumSQL       = `VACUUM`
 	InsertSQL       = `INSERT INTO player (fideid,name,country,sex,title,w_title,o_title,foa_title,rating,games,k,rapid_rating,rapid_games,rapid_k,blitz_rating,blitz_games,blitz_k,birthday,flag) VALUES (? /*not nullable*/,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 	SelectCountSQL  = `SELECT COUNT(*) FROM player`
 )
+
+type Player struct {
+	FideId      uint64 `json:"fideid"`
+	Name        string `json:"name"`
+	Country     string `json:"country"`
+	Sex         string `json:"sex"`
+	Title       string `json:"title"`
+	WTitle      string `json:"w_title"`
+	OTitle      string `json:"o_title"`
+	FoaTitle    string `json:"foa_title"`
+	Rating      uint   `json:"rating"`
+	Games       uint   `json:"games"`
+	K           uint8  `json:"k"`
+	RapidRating uint   `json:"rapid_rating"`
+	RapidGames  uint   `json:"rapid_games"`
+	RapidK      uint8  `json:"rapid_k"`
+	BlitzRating uint   `json:"blitz_rating"`
+	BlitzGames  uint   `json:"blitz_games"`
+	BlitzK      uint8  `json:"blitz_k"`
+	Birthday    uint16 `json:"birthday"`
+	Flag        string `json:"flag"`
+}
 
 type PlayersList struct {
 	XMLName xml.Name `xml:"playerslist"`
@@ -82,4 +105,16 @@ func loadContent(filename string) []byte {
 	content, err := ioutil.ReadFile(filename)
 	checkErr(err)
 	return content
+}
+
+func dbOpen(conn string) *sql.DB {
+	db, err := sql.Open("sqlite3", conn)
+	checkErr(err)
+	return db
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
