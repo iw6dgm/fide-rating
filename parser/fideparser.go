@@ -19,25 +19,25 @@ const (
 )
 
 type Player struct {
-	FideId      uint64 `json:"fideid"`
-	Name        string `json:"name"`
-	Country     string `json:"country"`
-	Sex         string `json:"sex"`
-	Title       string `json:"title"`
-	WTitle      string `json:"w_title"`
-	OTitle      string `json:"o_title"`
-	FoaTitle    string `json:"foa_title"`
-	Rating      uint   `json:"rating"`
-	Games       uint   `json:"games"`
-	K           uint8  `json:"k"`
-	RapidRating uint   `json:"rapid_rating"`
-	RapidGames  uint   `json:"rapid_games"`
-	RapidK      uint8  `json:"rapid_k"`
-	BlitzRating uint   `json:"blitz_rating"`
-	BlitzGames  uint   `json:"blitz_games"`
-	BlitzK      uint8  `json:"blitz_k"`
-	Birthday    uint16 `json:"birthday"`
-	Flag        string `json:"flag"`
+	FideId      uint64 `xml:"fideid"`
+	Name        string `xml:"name"`
+	Country     string `xml:"country"`
+	Sex         string `xml:"sex"`
+	Title       string `xml:"title"`
+	WTitle      string `xml:"w_title"`
+	OTitle      string `xml:"o_title"`
+	FoaTitle    string `xml:"foa_title"`
+	Rating      uint   `xml:"rating"`
+	Games       uint   `xml:"games"`
+	K           uint8  `xml:"k"`
+	RapidRating uint   `xml:"rapid_rating"`
+	RapidGames  uint   `xml:"rapid_games"`
+	RapidK      uint8  `xml:"rapid_k"`
+	BlitzRating uint   `xml:"blitz_rating"`
+	BlitzGames  uint   `xml:"blitz_games"`
+	BlitzK      uint8  `xml:"blitz_k"`
+	Birthday    uint16 `xml:"birthday"`
+	Flag        string `xml:"flag"`
 }
 
 type PlayersList struct {
