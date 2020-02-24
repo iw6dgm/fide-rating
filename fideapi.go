@@ -81,7 +81,7 @@ func main() {
 		})
 	})
 
-	http.ListenAndServe(":7373", r)
+	r.Run(":7373")
 }
 
 func dbGetPlayer(playerID uint64) (*Player, error) {
